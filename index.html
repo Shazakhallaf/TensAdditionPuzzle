@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Numbers Puzzle Game</title>
+    <style>
+        /* Body styles */
+        body {
+            font-family: 'Comic Sans MS', sans-serif;
+            background-color: #f7f9fb;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            height: 100vh;
+            margin: 0;
+            overflow-y: auto; /* Allow vertical scrolling */
+        }
+
+        /* Main container styles */
+        .main-container {
+            display: flex;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        /* Numbers container styles */
+        .numbers {
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 20px; /* Stay fixed at 20px from the top */
+            margin-right: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Number styles */
+        .number {
+            width: 50px;
+            height: 50px;
+            display: inline-flex; /* Use flex to center the text */
+            justify-content: center;
+            align-items: center; /* Center content vertically and horizontally */
+            margin: 5px;
+            background-color: #d3e9ff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+            font-size: 1em;
+        }
+
+        .number:hover {
+            background-color: #b5d5ff;
+        }
+
+        /* Game container styles */
+        .game-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 600px;
+            margin-top: 20px; /* Add margin for better positioning */
+        }
+
+        /* Header styles */
+        h1 {
+            color: #ff6f61;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        /* Instruction styles */
+        .instructions {
+            font-size: 1em;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        /* Equation styles */
+        .equation {
+            margin: 30px 0;
+            font-size: 1.2em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            line-height: 1.5;
+        }
+
+        .equation span {
+            margin: 0 10px;
+        }
+
+        /* Dropzone styles */
+        .dropzone {
+            width: 50px;
+            height: 50px; /* Set to match the number size */
+            border: 2px dashed #7fc1ca;
+            display: inline-flex; /* Use flex to center the text */
+            justify-content: center;
+            align-items: center; /* Center content vertically and horizontally */
+            border-radius: 5px;
+            background-color: #e7eff6;
+        }
+
+        /* Button styles */
+        button {
+            padding: 10px 20px;
+            font-size: 0.9em;
+            background-color: #fdd835;
+            color: #333;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #fbc02d;
+        }
+
+        /* Feedback label styles */
+        .feedback {
+            font-size: 0.9em;
+            margin-left: 10px;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        .correct {
+            color: #4caf50;
+        }
+
+        .incorrect {
+            color: #e53935;
+        }
+
+        .empty {
+            color: #ff9800;
+        }
+
+        /* Ten-frame container styles */
+        .ten-frame-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 15px;
+            padding: 10px 0;
+            border-radius: 10px;
+            width: 100%;
+            margin: 0 auto;
+            margin-bottom: 20px; /* Added margin bottom for space between frames */
+        }
+
+        .ten-frame {
+            display: grid;
+            grid-template-columns: repeat(5, 40px);
+            grid-template-rows: repeat(2, 40px);
+            gap: 5px;
+            justify-content: center;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .box {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #bbb;
+            border-radius: 5px;
+            background-color: #eee;
+        }
+
+        .red-dot {
+            background-color: #f44336;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+        }
+
+        .green-dot {
+            background-color: #4caf50;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <!-- Numbers -->
+        <div class="numbers">
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num0">0</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num3">3</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num7">7</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num4">4</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num9">9</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num10">10</div>
+            <div class="number" draggable="true" ondragstart="drag(event)" id="num6">6</div>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container">
+            <h1>Missing Numbers Puzzle Game</h1>
+            <div class="instructions">
+                <p>- Drag the numbers from the blue boxes into the dashed areas to complete each equation.</p>
+                <p>- Click on the number in the dashed area if you want to remove it.</p>
+                <p>- Click "Check" to see if your answer is correct!</p>
+            </div>
+
+            <!-- Equation 1 -->
+            <div class="equation">
+                <span>8 +</span>
+                <div class="dropzone" id="box1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span>= 10 + 7</span>
+                <button onclick="checkAnswer(1, 9, 'frame1')">Check</button>
+                <span class="feedback" id="feedback1"></span>
+            </div>
+            <div id="frame1" class="ten-frame-container" style="display: none;">
+                <div class="ten-frame" id="frame1-part1"></div>
+                <div class="ten-frame" id="frame1-part2"></div>
+            </div>
+
+            <!-- Equation 2 -->
+            <div class="equation">
+                <div class="dropzone" id="box2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span>+ 9 = 10 + 6</span>
+                <button onclick="checkAnswer(2, 7, 'frame2')">Check</button>
+                <span class="feedback" id="feedback2"></span>
+            </div>
+            <div id="frame2" class="ten-frame-container" style="display: none;">
+                <div class="ten-frame" id="frame2-part1"></div>
+                <div class="ten-frame" id="frame2-part2"></div>
+            </div>
+
+            <!-- Equation 3 -->
+            <div class="equation">
+                <span>7 + 6 = 10 +</span>
+                <div class="dropzone" id="box3" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <button onclick="checkAnswer(3, 3, 'frame3')">Check</button>
+                <span class="feedback" id="feedback3"></span>
+            </div>
+            <div id="frame3" class="ten-frame-container" style="display: none;">
+                <div class="ten-frame" id="frame3-part1"></div>
+                <div class="ten-frame" id="frame3-part2"></div>
+            </div>
+
+              <!-- Equation 4 -->
+              <div class="equation">
+                <span>6 + 6 =</span>
+                <div class="dropzone" id="box4" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <span>+ 2</span>
+                <button onclick="checkAnswer(4, 10, 'frame4')">Check</button>
+                <span class="feedback" id="feedback4"></span>
+            </div>
+            <div id="frame4" class="ten-frame-container" style="display: none;">
+                <div class="ten-frame" id="frame4-part1"></div>
+                <div class="ten-frame" id="frame4-part2"></div>
+            </div>
+
+            <!-- Equation 5 -->
+            <div class="equation">
+                <span>3 + 7 = 10 +</span>
+                <div class="dropzone" id="box5" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+                <button onclick="checkAnswer(5, 0, 'frame5')">Check</button>
+                <span class="feedback" id="feedback5"></span>
+            </div>
+            <div id="frame5" class="ten-frame-container" style="display: none;">
+                <div class="ten-frame" id="frame5-part1"></div>
+                <div class="ten-frame" id="frame5-part2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Allow the item to be dropped
+        function allowDrop(event) {
+            event.preventDefault();
+        }
+
+        // Store the draggable item data
+        function drag(event) {
+            event.dataTransfer.setData("text", event.target.id);
+        }
+
+        // Drop the item into the drop zone
+        function drop(event) {
+            event.preventDefault();
+            const data = event.dataTransfer.getData("text");
+            const target = event.target;
+
+            // Ensure the drop zone is empty
+            if (target.classList.contains("dropzone") && target.childNodes.length === 0) {
+                const nodeCopy = document.getElementById(data).cloneNode(true);
+                nodeCopy.removeAttribute("draggable");
+                nodeCopy.onclick = removeNumber; // Add click event to remove number
+                target.appendChild(nodeCopy);
+            }
+        }
+
+        // Check the answer for a specific box and show ten-frame visualization
+        function checkAnswer(boxNumber, correctValue, frameId) {
+            const box = document.getElementById('box' + boxNumber);
+            const feedback = document.getElementById('feedback' + boxNumber);
+            const frame = document.getElementById(frameId);
+
+            if (box.childNodes.length > 0) {
+                const userAnswer = parseInt(box.childNodes[0].innerText);
+
+                if (userAnswer === correctValue) {
+                    const equations = [
+                        { left: 8, right: 9 }, // Equation 1: 8 + missing = 10 + 7
+                        { left: 10, right: 6 }, // Equation 2: missing + 9 = 10 + 6
+                        { left: 7, right: 6 }, // Equation 3: 7 + 6 = 10 + missing
+                        { left: 6, right: 6 }, // Equation 4: 6 + 6 = missing + 2
+                        { left: 3, right: 7 }  // Equation 5: 3 + 7 = 10 + missing
+                    ];
+
+                    // Calculate sum of dots
+                    const sum = equations[boxNumber - 1].left  + equations[boxNumber - 1].right;
+
+                    feedback.textContent = `Correct! Total = ${sum}`;
+                    feedback.className = "feedback correct";
+                    showTenFrame(frameId, boxNumber, userAnswer);
+                } else {
+                    feedback.textContent = "Incorrect, try again!";
+                    feedback.className = "feedback incorrect";
+                    frame.style.display = 'none'; // Hide frame if incorrect
+                }
+            } else  {
+                feedback.textContent = "Box is empty!";
+                feedback.className = "feedback empty";
+                frame.style.display = 'none'; // Hide frame if empty
+            }
+        }
+
+        // Show the ten-frame representation
+        function showTenFrame(frameId, boxNumber, missingNumber) {
+            const framePart1 = document.getElementById(frameId + '-part1');
+            const framePart2 = document.getElementById(frameId + '-part2');
+            framePart1.innerHTML = ''; // Clear previous dots
+            framePart2.innerHTML = ''; // Clear previous dots
+
+            // Define the equations
+            const equations = [
+                { left: 8, missing: missingNumber, right: 7 }, // Equation 1: 8 + missing = 10 + 7
+                { left: missingNumber, missing: 9, right: 6 }, // Equation 2: missing + 9 = 10 + 6
+                { left: 7, missing: 6, right: missingNumber }, // Equation 3: 7 + 6 = 10 + missing
+                { left: 6, missing: 6, right: 2 }, // Equation 4: 6 + 6 = missing + 2
+                { left: 3, missing: 7, right: missingNumber }  // Equation 5: 3 + 7 = 10 + missing
+            ];
+
+            // Get the current equation
+            const equation = equations[boxNumber - 1];
+
+            // Fill the first ten-frame (left + missing)
+            fillFrame(framePart1, Math.max(equation.left, equation.missing), Math.min(equation.left, equation.missing));
+
+            // Fill the second ten-frame (right + 10)
+            fillFrame(framePart2, Math.max(equation.right, 10), Math.min(equation.right, 10));
+
+            framePart1.parentElement.style.display = 'flex'; // Show frame
+        }
+// Function to fill the ten-frame
+function fillFrame(frame, large, small) {
+    const totalBoxes = 20; // Maximum boxes in a ten-frame should be 10
+    let currentFill = 0;
+
+    // Fill the frame with the larger number of dots first
+    for (let i = 0; i < large && currentFill < totalBoxes; i++) {
+        const box = document.createElement('div');
+        box.className = 'box';
+        const dot = document.createElement('div');
+        dot.className = 'red-dot'; // Use red for the first portion
+        box.appendChild(dot);
+        frame.appendChild(box);
+        currentFill++;
+    }
+
+    // Fill the frame with the smaller number of dots next
+    for (let i = 0; i < small && currentFill < totalBoxes; i++) {
+        const box = document.createElement('div');
+        box.className = 'box';
+        const dot = document.createElement('div');
+        dot.className = 'green-dot'; // Use green for the second portion
+        box.appendChild(dot);
+        frame.appendChild(box);
+        currentFill++;
+    }
+
+    // Fill remaining boxes with empty spots, if any
+    while (currentFill < totalBoxes) {
+        const box = document.createElement('div');
+        box.className = 'box'; // Empty boxes without dots
+        frame.appendChild(box);
+        currentFill++;
+    }
+}
+
+    
+ 
+
+        // Remove the number from the dropzone
+        function removeNumber(event) {
+            const parent = event.target.parentNode;
+            parent.removeChild(event.target);
+        }
+    </script>
+</body>
+
+</html>
